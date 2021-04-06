@@ -40,3 +40,9 @@ Check out our [Next.js deployment documentation](https://nextjs.org/docs/deploym
 - Criação da página de sign in e login utilizando chakra
 - Validação e envio de formulários com formik e yup
 - Conexão e autenticação com firebase
+  
+## Second day
+- Conferindo autenticação e ação correspondente 
+- Criação e configuração do banco de dados
+- Deploy na vercel
+  

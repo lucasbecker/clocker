@@ -11,17 +11,20 @@ import {
   FormLabel, 
   FormHelperText,
   Button, 
+  InputLeftAddon,
+  InputGroup
 } from '@chakra-ui/react';
 
-import firebase from './../config/firebase';
-import { Logo } from './../components';
+import { firebaseClient, persistenceMode } from '../config/firebase/client';
+import { Logo } from '../components';
 
 const validationSchema = yup.object().shape({
   email: yup.string().email('E-mail inválido!').required('Preenchimento obrigatório!'),
   password: yup.string().required('Preenchimento obrigatório!'),
+  username: yup.string().required('Preenchimento obrigatório!')
 });
 
-export default function Home() {
+export default function Signup() {
   const {
     values,
     errors,
@@ -32,8 +35,9 @@ export default function Home() {
     isSubmitting
   } = useFormik({
     onSubmit: async ({email, password, username}, form) => {
+      firebaseClient.auth().setPersistence(persistenceMode);
       try {
-        const user = await firebase.auth().signInWithEmailAndPassword(email, password);
+        const user = await firebaseClient.auth().createUserWithEmailAndPassword(email, password);
         console.log(user);
       } catch(error) {
         console.log('ERROR: ', error);
@@ -51,10 +55,10 @@ export default function Home() {
       <Logo />
 
       <Box p={4} mt={8}>
-        <Text>Acesse sua agenda compartilhada.</Text>
+        <Text>Crie sua agenda compartilhada.</Text>
       </Box>
 
-      <Box width='380px'>
+      <Box>
         <FormControl id='email' p={4}>
           <FormLabel>Email</FormLabel>
           <Input 
@@ -85,6 +89,23 @@ export default function Home() {
           }
         </FormControl>
 
+        <FormControl id='username' p={4}>
+          <InputGroup>
+            <InputLeftAddon>localhost:3000/</InputLeftAddon>
+            <Input 
+              type='username'
+              value={values.username} 
+              onChange={handleChange} 
+              onBlur={handleBlur}
+            />
+          </InputGroup>
+          {touched.username && 
+            <FormHelperText textColor='#e74c3c'>
+              {errors.username}
+            </FormHelperText>
+          } 
+        </FormControl>
+
         <FormControl id='submit' p={4}>
           <Button 
             backgroundColor='#4E84D4' 
@@ -98,8 +119,8 @@ export default function Home() {
           </Button>
         </FormControl>
       </Box>
-      
-      <Link href="/">Ainda não tem uma conta? Cadastre-se.</Link>
+
+      <Link href="/">Já possui uma conta? Acesse.</Link>
 
     </Container>
   )
