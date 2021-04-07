@@ -1,8 +1,8 @@
 import { Button } from "@chakra-ui/react"
-import { firebaseClient } from './../../config/firebase/client';
+import { useAuth } from './../Auth';
 
 export const Schedule = () => {
-  const logout = () => firebaseClient.auth().signOut();
+  const [, { logout }] = useAuth();
   return (
     <Button onClick={logout}>Sair</Button>
   )

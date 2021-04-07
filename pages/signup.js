@@ -1,4 +1,6 @@
+import { useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 import { useFormik } from 'formik';
 import * as yup from 'yup';
 
@@ -15,8 +17,7 @@ import {
   InputGroup
 } from '@chakra-ui/react';
 
-import { firebaseClient, persistenceMode } from '../config/firebase/client';
-import { Logo } from '../components';
+import { Logo, useAuth } from '../components';
 
 const validationSchema = yup.object().shape({
   email: yup.string().email('E-mail inválido!').required('Preenchimento obrigatório!'),
@@ -25,6 +26,10 @@ const validationSchema = yup.object().shape({
 });
 
 export default function Signup() {
+  const [ auth, { signup }] = useAuth();
+  const router = useRouter();
+
+
   const {
     values,
     errors,
@@ -34,15 +39,7 @@ export default function Signup() {
     handleSubmit,
     isSubmitting
   } = useFormik({
-    onSubmit: async ({email, password, username}, form) => {
-      firebaseClient.auth().setPersistence(persistenceMode);
-      try {
-        const user = await firebaseClient.auth().createUserWithEmailAndPassword(email, password);
-        console.log(user);
-      } catch(error) {
-        console.log('ERROR: ', error);
-      }
-    },
+    onSubmit: signup,
     validationSchema,
     initialValues: {
       email: '',
@@ -50,6 +47,11 @@ export default function Signup() {
       username: ''
     }
   })
+
+  useEffect(() => {
+    auth.user && router.push('/')
+  }, [auth.user])
+
   return (
     <Container p={4} centerContent>
       <Logo />
